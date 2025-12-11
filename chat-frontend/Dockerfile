@@ -21,7 +21,12 @@ FROM nginx:alpine
 WORKDIR /app
 
 # Copy nginx config for SPA routing
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx
+COPY nginx.template.conf /etc/nginx/
+COPY docker-entrypoint.sh /usr/local/bin/
+
+# Make the script executable
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Copy built app from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -31,7 +36,10 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -q --spider http://localhost:8080/ || exit 1
+    CMD curl -s http://localhost:8080/ || exit 1
+
+# Use the custom script as the entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # Run Nginx
 CMD ["nginx", "-g", "daemon off;"]

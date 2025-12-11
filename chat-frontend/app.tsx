@@ -33,7 +33,7 @@ export default function App() {
     }, 0);
 
     let response = "";
-    const res = await fetch(`${import.meta.env.VITE_CHAT_BACKEND}/chat`, {
+    const res = await fetch(`/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: input }),
